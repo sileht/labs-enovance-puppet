@@ -1,3 +1,6 @@
 [submodule "nova"]
 	path = nova
 	url = git@github.com:fcharlier/puppetlabs-nova.git
+[submodule "mysql"]
+	path = mysql
+	url = https://github.com/puppetlabs/puppetlabs-mysql/
