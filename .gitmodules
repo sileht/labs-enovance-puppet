@@ -4,6 +4,3 @@
 [submodule "mysql"]
 	path = mysql
 	url = git://github.com/puppetlabs/puppetlabs-mysql.git
-[submodule "puppetlabs-mysql"]
-	path = puppetlabs-mysql
-	url = git://github.com/puppetlabs/puppetlabs-mysql.git
