@@ -1,0 +1,66 @@
+###############################################################################
+# Access Control
+###############################################################################
+
+####
+# First, map the community name (COMMUNITY) into a security name
+# (local and mynetwork, depending on where the request is coming
+# from):
+
+#       sec.name    source          community
+com2sec paranoid    default         public
+
+<%# generate the IP acl %>
+<% sources.keys.sort.each do |key| -%>
+<% sources.each_pair do |hostname, ipaddr| -%>
+<% if key == hostname %>
+# <%= hostname %>
+<% users.each_pair do |user, values| -%>
+com2sec <%= user %>  <%= ipaddr %>       <%= user %>
+<% end -%>
+
+<% end -%>
+<% end -%>
+<% end -%>
+
+
+####
+# Second, map the security names into group names:
+
+#             	sec.model      sec.name
+group MyROSystem v1            paranoid
+group MyROSystem v2c           paranoid
+group MyROSystem usm           paranoid
+group MyROGroup v1             readonly
+group MyROGroup v2c            readonly
+group MyROGroup usm            readonly
+group MyRWGroup v1             readwrite
+group MyRWGroup v2c            readwrite
+group MyRWGroup usm            readwrite
+<%# generate the security groups %>
+<% sec_model.each { |secmodel| -%>
+<% users.each_pair do |user, hash| -%>
+group <%= hash['group'] %> <%= secmodel %>      <%= user %>
+<% end -%>
+<% } -%>
+
+# Third, create a view for us to let the groups have rights to:
+
+#           incl/excl subtree                          mask
+view all    included  .1                               80
+view system included  .iso.org.dod.internet.mgmt.mib-2.system
+
+####
+# Finally, grant the 2 groups access to the 1 view with different
+# write permissions:
+
+#                context sec.model sec.level match  read   write  notif
+access MyROSystem ""     any       noauth    exact  system none   none
+access MyROGroup ""      any       noauth    exact  all    none   none
+access MyRWGroup ""      any       noauth    exact  all    all    none
+<%# grant group acces %>
+<% users.each_pair do |user, hash| -%>
+access <%= hash['group'] %> ""  any     noauth  exact   all <%= hash['write'] %>    none
+<% end -%>
+
+# -----------------------------------------------------------------------------

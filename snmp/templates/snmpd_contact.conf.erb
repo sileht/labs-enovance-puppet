@@ -1,0 +1,16 @@
+###############################################################################
+# System contact information
+#
+
+# It is also possible to set the sysContact and sysLocation system
+# variables through the snmpd.conf file.  **PLEASE NOTE** that setting
+# the value of these objects here makes these objects READ-ONLY
+# (regardless of any access control settings).  Any attempt to set the
+# value of an object whose value is given here will fail with an error
+# status of notWritable.
+
+syslocation "<%= hostname %> @ <%= @whereami %> @ <%= @datacenter %>"
+syscontact eNovance <admin@enovance.com>
+
+# -----------------------------------------------------------------------------
+

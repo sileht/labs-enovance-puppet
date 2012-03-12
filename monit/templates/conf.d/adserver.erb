@@ -1,0 +1,10 @@
+ check process adserver with pidfile /var/run/adserver.pid
+   group root
+   start program = "/etc/init.d/adserver start"
+   stop  program = "/etc/init.d/adserver stop"
+   if totalmemory usage > 90% then restart
+   if failed host localhost port 80 
+        protocol HTTP and request "/moniter"
+    with timeout 5 seconds 
+        for 2 cycles then restart
+   if 10 restarts within 10 cycles then timeout

@@ -1,0 +1,3 @@
+class ocsinventory::params {
+  $url           = ''
+}

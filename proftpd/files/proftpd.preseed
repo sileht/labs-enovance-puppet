@@ -1,0 +1,4 @@
+# source: 
+#  https://github.com/avalos/puppet-proftpd/blob/master/files/proftpd/proftpd.preseed
+
+proftpd-basic   shared/proftpd/inetd_or_standalone      select  standalone

@@ -1,0 +1,18 @@
+<%# generate the resolv.conf file -%>
+<%# add the search path -%>
+<% if !searchpath.empty? %>search <%= searchpath %>
+<% end -%>
+<%# add the 'local' nameservers -%>
+<% dcinfo.each_pair do |dc, nameservers| -%>
+<% if dc == @datacenter -%>
+<% nameservers.each do |ns| %>nameserver <%= ns %>
+<% end -%>
+<% end -%>
+<% end -%>
+<%# add the public nameservers -%>
+<% if !publicdns.empty? -%>
+<% publicdns.each do |ns| %>nameserver <%= ns %>
+<% end -%>
+<% end -%>
+options timeout:1
+options attempts:1
