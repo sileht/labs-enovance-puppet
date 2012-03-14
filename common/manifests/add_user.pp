@@ -7,18 +7,39 @@ define common::add_user (
   $password,
   $groups,
   $sshkey_type,
-  $sshkey, $sshkey_name )
-  {
+  $sshkey,
+  $sshkey_name,
+  $home='',
+  $uid='' ) {
 
   $username = $title
-  $homedir  = "/home/$username"
 
-  user { $username:
-    comment     => $email,
-    home        => "/home/$username",
-    shell       => '/bin/bash',
-    password    => $password,
-    groups      => $groups,
+  # set home directory
+  if $home {
+    $homedir    = $home
+  } else {
+    $homedir    = "/home/$username"
+  }
+
+  if $uid {
+    # case UID is explicitly specified
+    user { $username:
+      comment     => $email,
+      home        => $homedir,
+      shell       => '/bin/bash',
+      password    => $password,
+      groups      => $groups,
+      uid         => $uid,
+    }
+  } else {
+    # case no UID is specified
+    user { $username:
+      comment     => $email,
+      home        => $homedir,
+      shell       => '/bin/bash',
+      password    => $password,
+      groups      => $groups
+    }
   }
 
   group { $username:
