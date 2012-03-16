@@ -3,7 +3,7 @@
 	url = git@github.com:fcharlier/puppetlabs-nova.git
 [submodule "mysql"]
 	path = mysql
-	url = git@github.com:fcharlier/puppetlabs-mysql/
+	url = git@github.com:fcharlier/puppetlabs-mysql.git
 [submodule "rabbitmq"]
 	path = rabbitmq
 	url = git@github.com:fcharlier/puppetlabs-rabbitmq.git
