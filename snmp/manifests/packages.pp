@@ -3,7 +3,7 @@ class snmp::packages {
     'Ubuntu', 'Debian': {
       package {
         'snmp':
-          ensure    => installed,
+          ensure    => present,
           require   => Class['enovance'],
       }
     }
