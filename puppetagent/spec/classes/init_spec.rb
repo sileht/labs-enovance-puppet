@@ -8,7 +8,6 @@ describe 'puppetagent' do
       :daemonoptions    => '--onetime',
     }
   }
-  let(:environment) { 'development' }
 
   # test included subclasses
   it { should include_class('puppetagent::config') }
