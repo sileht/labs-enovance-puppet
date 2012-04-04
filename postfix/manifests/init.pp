@@ -3,8 +3,9 @@
 # == Parameters
 # [client]
 #   *optional* set client name used for sasl authentification with MX
-# [sasl_passwd]
+# [sasl]
 #   *optional* if set to 'none', no authentification will be configured
+#   else, sets the SASL password.
 #
 # == TODO
 # * Add the auto-provisionning/generation of client/password to MX

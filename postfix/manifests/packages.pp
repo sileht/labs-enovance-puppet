@@ -3,7 +3,7 @@ class postfix::packages {
     'Ubuntu', 'Debian': {
       package {
         'postfix':
-          ensure    => installed,
+          ensure    => present,
       }
     }
     default: {

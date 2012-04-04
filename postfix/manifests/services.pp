@@ -1,5 +1,13 @@
 class postfix::services {
-    service { 'postfix':
+  case $::operatingsystem {
+    'Debian', 'Ubuntu': {
+      service { 'postfix':
         ensure      => true,
+      }
     }
+    default: {
+      err("$::module class is for Debian-derived systems.")
+      err("$::fqdn runs $::operatingsystem.")
+    }
+  }
 }
