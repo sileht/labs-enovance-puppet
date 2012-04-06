@@ -3,7 +3,7 @@ class ssh::packages {
     'Ubuntu', 'Debian': {
       package {
         'openssh-server':
-          ensure => installed;
+          ensure => present;
       }
     }
     default: {
