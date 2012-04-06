@@ -1,5 +1,14 @@
 class ntp::packages {
-    package { 'ntp':
-      ensure => present,
+  case $::operatingsystem {
+    'Ubuntu', 'Debian': {
+      package {
+        'ntp':
+          ensure    => present,
+      }
     }
+    default: {
+      err("$::module class is for Debian-derived systems.")
+      err("$::fqdn runs $::operatingsystem.")
+    }
+  }
 }
