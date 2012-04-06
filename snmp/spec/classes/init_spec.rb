@@ -121,7 +121,14 @@ describe 'snmp' do
               'group' => 'root',
               'mode'  => '0760' )
     }
-
+    it "should have a valid default" do
+      content = param_value(subject, 'file', '/etc/default/snmpd', 'content')
+      expected_lines = [
+        'SNMPDRUN=yes',
+        "SNMPDOPTS='-c /etc/snmp/snmpd_acl.conf'",
+      ]
+      (content.split("\n") & expected_lines).should == expected_lines
+    end
   end
 
   describe 'Other OS' do
