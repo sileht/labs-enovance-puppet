@@ -1,5 +1,14 @@
 class muninnode::packages {
-    package { 'munin-node':
-      ensure => present,
+  case $::operatingsystem {
+    'Ubuntu', 'Debian': {
+      package {
+        'munin-node':
+          ensure    => present,
+      }
     }
+    default: {
+      err("$::module class is for Debian-derived systems.")
+      err("$::fqdn runs $::operatingsystem.")
+    }
+  }
 }

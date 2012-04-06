@@ -5,10 +5,18 @@ class muninnode::config ( $sources, $port ) {
       mode  => '0640',
     }
 
-    file { '/etc/munin/munin-node.conf':
-      ensure    => present,
-      content   => template('muninnode/munin-node.conf.erb'),
-      require   => Class['muninnode::packages'],
-      notify    => Class['muninnode::services'],
+  case $::operatingsystem {
+    'Ubuntu', 'Debian': {
+      file { '/etc/munin/munin-node.conf':
+        ensure    => present,
+        content   => template('muninnode/munin-node.conf.erb'),
+        require   => Class['muninnode::packages'],
+        notify    => Class['muninnode::services'],
+      }
     }
+    default: {
+      err("$::module class is for Debian-derived systems.")
+      err("$::fqdn runs $::operatingsystem.")
+    }
+  }
 }
