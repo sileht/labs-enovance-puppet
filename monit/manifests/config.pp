@@ -1,5 +1,6 @@
 class monit::config (
-  $start        = $monit::params::start
+  $start        = $monit::params::start,
+  $email        = $monit::params::email
 ) {
   case $::operatingsystem {
     'Ubuntu', 'Debian': {

@@ -2,7 +2,7 @@ class monit::packages {
   case $::operatingsystem {
     'Ubuntu', 'Debian': {
       package {
-        'monit': ensure => installed;
+        'monit': ensure => present;
       }
     }
     default: {

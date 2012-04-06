@@ -21,7 +21,7 @@ set logfile syslog facility log_daemon
 ## service defined in this file has errors. Alerts may be restricted on 
 ## events by using a filter as in the second example below. 
 #
-set alert admin@enovance.com                      # receive all alerts
+set alert <%= email %>
 
 ## Monit has an embedded web server which can be used to view status of 
 ## services monitored, the current configuration, actual services parameters
