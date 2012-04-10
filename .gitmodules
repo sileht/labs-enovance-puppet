@@ -25,3 +25,6 @@
 [submodule "xinetd"]
 	path = xinetd
 	url = git://github.com/fcharlier/puppet-xinetd.git
+[submodule "glance"]
+	path = glance
+	url = git://github.com/puppetlabs/puppetlabs-glance.git
