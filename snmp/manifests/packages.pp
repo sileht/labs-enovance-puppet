@@ -2,7 +2,7 @@ class snmp::packages {
   case $::operatingsystem {
     'Ubuntu', 'Debian': {
       package {
-        'snmp':
+        'snmpd':
           ensure    => present,
           require   => Class['enovance'],
       }
