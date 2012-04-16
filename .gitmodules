@@ -1,0 +1,30 @@
+[submodule "nova"]
+	path = nova
+	url = git://github.com/fcharlier/puppetlabs-nova.git
+[submodule "mysql"]
+	path = mysql
+	url = git://github.com/puppetlabs/puppetlabs-mysql.git
+[submodule "rabbitmq"]
+	path = rabbitmq
+	url = git://github.com/puppetlabs/puppetlabs-rabbitmq.git
+[submodule "stdlib"]
+	path = stdlib
+	url = git://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "swift"]
+	path = swift
+	url = git://github.com/puppetlabs/puppetlabs-swift.git
+[submodule "ssh"]
+	path = ssh
+	url = git://github.com/saz/puppet-ssh.git
+[submodule "rsync"]
+	path = rsync
+	url = git://github.com/puppetlabs/puppetlabs-rsync.git
+[submodule "memcached"]
+	path = memcached
+	url = git://github.com/saz/puppet-memcached.git
+[submodule "xinetd"]
+	path = xinetd
+	url = git://github.com/fcharlier/puppet-xinetd.git
+[submodule "glance"]
+	path = glance
+	url = git://github.com/puppetlabs/puppetlabs-glance.git
