@@ -34,3 +34,6 @@
 [submodule "concat"]
 	path = concat
 	url = git://github.com/puppetlabs/puppet-concat.git
+[submodule "sysctl"]
+	path = sysctl
+	url = git://github.com/duritong/puppet-sysctl.git
