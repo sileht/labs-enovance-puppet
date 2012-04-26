@@ -30,7 +30,7 @@
 	url = git://github.com/puppetlabs/puppetlabs-glance.git
 [submodule "keystone"]
 	path = keystone
-	url = git://github.com/fcharlier/puppetlabs-keystone.git
+	url = git://github.com/puppetlabs/puppetlabs-keystone.git
 [submodule "concat"]
 	path = concat
 	url = git://github.com/puppetlabs/puppet-concat.git
