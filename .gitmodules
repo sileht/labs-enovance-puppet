@@ -37,3 +37,9 @@
 [submodule "sysctl"]
 	path = sysctl
 	url = git://github.com/duritong/puppet-sysctl.git
+[submodule "git"]
+	path = git
+	url = git://github.com/puppetlabs/puppetlabs-git.git
+[submodule "vcsrepo"]
+	path = vcsrepo
+	url = git://github.com/puppetlabs/puppet-vcsrepo.git
