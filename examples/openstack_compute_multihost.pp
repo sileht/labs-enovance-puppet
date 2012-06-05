@@ -134,7 +134,9 @@ node /controller/ {
   Class['keystone::config::mysql'] -> Class['keystone::roles::admin']
 
   class { 'keystone::endpoint':
-    address => $api_server,
+    public_address   => $api_server,
+    admin_address    => $api_server,
+    internal_address => $api_server,
   }
 
 
