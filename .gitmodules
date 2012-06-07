@@ -21,7 +21,7 @@
 	url = git://github.com/fcharlier/puppetlabs-rsync.git
 [submodule "memcached"]
 	path = memcached
-	url = git://github.com/saz/puppet-memcached.git
+	url = git://github.com/fcharlier/puppet-memcached.git
 [submodule "xinetd"]
 	path = xinetd
 	url = git://github.com/ghoneycutt/puppet-xinetd.git
