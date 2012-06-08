@@ -6,7 +6,7 @@
 ###
 
 # The fqdn of the proxy host
-$api_server = 'controller'
+$api_server = 'controller.hostname'
 
 # Mysql database root password. MySQL will be used for nova, keystone and glance. 
 $db_rootpassword = 'dummy_password'
