@@ -23,7 +23,8 @@ $db_name = 'nova'
 $db_user = 'nova'
 # TODO: change these two lines to exported variables …
 $db_host = '192.168.66.100' # IP address of the host on which the database will be installed (the controller for instance)
-$db_allowed_hosts = ['192.168.66.1', '192.168.66.2'] # IP addresses for all compute hosts : they need access to the database
+$db_allowed_hosts = ['192.168.66.1', '192.168.66.2', '192.168.66.100'] # IP addresses for all compute hosts : they need access to the database
+
 
 # Rabbitmq config
 $rabbit_host = $api_server
@@ -76,6 +77,83 @@ resources { 'nova_config':
   purge => true,
 }
 
+
+class role_nova_base {
+  # NOTE(francois.charlier): to be included in Class['nova'] ?
+  nova_config { "my_ip": value => $ipaddress_eth1 }
+
+  class { 'nova':
+    glance_api_servers            => "${glance_host}:9292",
+    image_service                 => 'nova.image.glance.GlanceImageService',
+    multi_host_networking         => true,
+    network_manager               => $network_manager,
+    rabbit_host                   => $rabbit_host,
+    sql_connection                => "mysql://${db_user}:${db_password}@${db_host}/${db_name}?charset=utf8",
+    verbose                       => true,
+    vlan_interface                => 'eth1',
+    vlan_start                    => '2000',
+  }
+}
+
+class role_nova_controller {
+  ###
+  # Nova
+  ###
+
+  class { 'nova::rabbitmq':
+  }
+
+  class { 'nova::db::mysql':
+    # pass in db config as params
+    password      => $db_password,
+    dbname        => $db_name,
+    user          => $db_user,
+    host          => 'localhost',
+    allowed_hosts => $db_allowed_hosts,
+    require       => Class['mysql::server'],
+  }
+
+  Class['nova::db::mysql'] -> Class['nova']
+
+  class { "nova::api":
+    enabled           => true,
+    auth_host         => $api_server,
+    admin_tenant_name => $admin_tenant_name,
+    admin_user        => $nova_auth,
+    admin_password    => $nova_pass,
+  }
+
+  class { "nova::objectstore":
+    enabled => true,
+  }
+
+  class { "nova::cert":
+    enabled => true,
+  }
+}
+
+class role_nova_compute {
+  class { 'nova::compute':
+    enabled                       => true,
+    vncserver_proxyclient_address => $ipaddress_eth1,
+    novncproxy_base_url           => "http://${api_server}:6080/vnc_auto.html",
+  }
+  class { 'nova::compute::libvirt':
+    libvirt_type     => $libvirt_type,
+    vncserver_listen => $ipaddress_eth1,
+  }
+
+  # FIXME: to be included in the nova module ?
+  # NOTE: inspired from http://projects.puppetlabs.com/projects/1/wiki/Kernel_Modules_Patterns
+  # Activate nbd module (for qemu-nbd)
+  exec { "insert_module_nbd":
+    command => "/bin/echo 'nbd' > /etc/modules",
+    unless  => "/bin/grep 'nbd' /etc/modules",
+  }
+  exec { "/sbin/modprobe nbd":
+    unless => "/bin/grep -q '^nbd ' '/proc/modules'"
+  }
+}
 
 ###
 # Controller node
@@ -250,6 +328,11 @@ node /controller/ {
     sql_connection    => "mysql://${glance_db_user}:${glance_db_password}@localhost/${glance_db_name}"
   }
 
+  include role_nova_base
+  include role_nova_controller
+  include role_nova_compute
+  class { 'nova::network::vlan': enabled => true }
+
   ###
   # rcfile for tests
   ###
@@ -278,41 +361,9 @@ node /compute/ {
     before => Class['nova'],
   }
 
-  # NOTE(francois.charlier): to be included in Class['nova'] ?
-  nova_config { "my_ip": value => $ipaddress_eth1 }
-
-  class { 'nova':
-    verbose                       => true,
-    sql_connection                => "mysql://${db_user}:${db_password}@${db_host}/${db_name}?charset=utf8",
-    multi_host_networking         => true,
-    rabbit_host                   => $rabbit_host,
-    network_manager               => $network_manager,
-    vlan_interface                => 'eth1',
-    vlan_start                    => '2000',
-    image_service                 => 'nova.image.glance.GlanceImageService',
-    glance_api_servers            => "${glance_host}:9292",
-  }
+  include role_nova_base
+  include role_nova_compute
   class { 'nova::compute::multi_host':
     enabled => true,
-  }
-  class { 'nova::compute':
-    enabled                       => true,
-    vncserver_proxyclient_address => $ipaddress_eth1,
-    novncproxy_base_url           => "http://${api_server}:6080/vnc_auto.html",
-  }
-  class { 'nova::compute::libvirt':
-    libvirt_type     => $libvirt_type,
-    vncserver_listen => $ipaddress_eth1,
-  }
-
-  # FIXME: to be included in the nova module ?
-  # NOTE: inspired from http://projects.puppetlabs.com/projects/1/wiki/Kernel_Modules_Patterns
-  # Activate nbd module (for qemu-nbd)
-  exec { "insert_module_nbd":
-    command => "/bin/echo 'nbd' > /etc/modules",
-    unless  => "/bin/grep 'nbd' /etc/modules",
-  }
-  exec { "/sbin/modprobe nbd":
-    unless => "/bin/grep -q '^nbd ' '/proc/modules'"
   }
 }
