@@ -1,5 +1,8 @@
 ###
 # params needed by compute & controller
+#
+# This example has been designed to be used in the context of http://wiki.debian.org/OpenStackPuppetHowto
+#
 ###
 
 # The fqdn of the proxy host
@@ -19,8 +22,8 @@ $db_password = 'dummy_nova_password'
 $db_name = 'nova'
 $db_user = 'nova'
 # TODO: change these two lines to exported variables …
-$db_host = '192.168.66.100' # private address for the controller !!!
-$db_allowed_hosts = ['192.168.66.1', '192.168.66.2'] # private addresses for the compute nodes !!!
+$db_host = '192.168.66.100' # IP address of the host on which the database will be installed (the controller for instance)
+$db_allowed_hosts = ['192.168.66.1', '192.168.66.2'] # IP addresses for all compute hosts : they need access to the database
 
 # Rabbitmq config
 $rabbit_host = $api_server
