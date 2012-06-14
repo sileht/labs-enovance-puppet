@@ -1,14 +1,14 @@
 ###
 # params needed by compute & controller
-#
-# This example has been designed to be used in the context of http://wiki.debian.org/OpenStackPuppetHowto
+# 
+# The controller is configured to also be a compute node.
 #
 ###
 
-# The fqdn of the controller host
+# The fqdn of the proxy host
 $api_server = 'controller.hostname'
 
-# Mysql database root password. MySQL will be used for nova, keystone and glance. 
+# Mysql database root password
 $db_rootpassword = 'dummy_password'
 
 ## Nova
@@ -219,56 +219,6 @@ node /controller/ {
     admin_address    => $api_server,
     internal_address => $api_server,
   }
-
-
-  ###
-  # Nova
-  ###
-
-  class { 'nova::rabbitmq':
-  }
-
-  class { 'nova::db::mysql':
-    # pass in db config as params
-    password      => $db_password,
-    dbname        => $db_name,
-    user          => $db_user,
-    host          => 'localhost',
-    allowed_hosts => $db_allowed_hosts,
-    require       => Class['mysql::server'],
-  }
-
-  class { "nova":
-    sql_connection        => "mysql://${db_user}:${db_password}@$localhost/${db_name}?charset=utf8",
-    image_service         => 'nova.image.glance.GlanceImageService',
-    glance_api_servers    => "${glance_host}:9292",
-    rabbit_host           => $rabbit_host,
-    network_manager       => $network_manager,
-    multi_host_networking => $multi_host_networking,
-    vlan_interface        => 'eth1',
-    vlan_start            => 2000,
-    verbose               => $verbose,
-  }
-  Class['nova::db::mysql'] -> Class['nova']
-
-  class { "nova::api":
-    enabled           => true,
-    auth_host         => $api_server,
-    admin_tenant_name => $admin_tenant_name,
-    admin_user        => $nova_auth,
-    admin_password    => $nova_pass,
-  }
-
-  class { "nova::objectstore":
-    enabled => true,
-  }
-
-  class { "nova::cert":
-    enabled => true,
-  }
-
-  # NOTE(fcharlier): to be included in Class['nova'] ?
-  nova_config { "my_ip": value => $ipaddress_eth1 }
 
   class { "nova::scheduler": enabled => true }
 
