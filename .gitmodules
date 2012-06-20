@@ -12,13 +12,13 @@
 	url = git://github.com/puppetlabs/puppetlabs-stdlib.git
 [submodule "swift"]
 	path = swift
-	url = git://github.com/puppetlabs/puppetlabs-swift.git
+	url = git://github.com/fcharlier/puppetlabs-swift.git
 [submodule "ssh"]
 	path = ssh
 	url = git://github.com/saz/puppet-ssh.git
 [submodule "rsync"]
 	path = rsync
-	url = git://github.com/fcharlier/puppetlabs-rsync.git
+	url = git://github.com/puppetlabs/puppetlabs-rsync.git
 [submodule "memcached"]
 	path = memcached
 	url = git://github.com/saz/puppet-memcached.git
