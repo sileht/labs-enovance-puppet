@@ -46,3 +46,6 @@
 [submodule "horizon"]
 	path = horizon
 	url = git://github.com/fcharlier/puppetlabs-horizon.git
+[submodule "munin"]
+	path = munin
+	url = git://github.com/fcharlier/puppet-munin.git
