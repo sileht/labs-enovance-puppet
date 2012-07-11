@@ -45,7 +45,7 @@
 	url = git://github.com/puppetlabs/puppetlabs-vcsrepo.git
 [submodule "horizon"]
 	path = horizon
-	url = git://github.com/fcharlier/puppetlabs-horizon.git
+	url = git://github.com/puppetlabs/puppetlabs-horizon.git
 [submodule "munin"]
 	path = munin
 	url = git://github.com/fcharlier/puppet-munin.git
