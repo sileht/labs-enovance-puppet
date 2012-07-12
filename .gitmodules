@@ -49,3 +49,9 @@
 [submodule "munin"]
 	path = munin
 	url = git://github.com/fcharlier/puppet-munin.git
+[submodule "nodejs"]
+	path = nodejs
+	url = git://github.com/fcharlier/puppet-npm.git
+[submodule "logio"]
+	path = logio
+	url = git://github.com/fcharlier/puppet-log.io.git
