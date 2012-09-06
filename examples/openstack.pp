@@ -1,14 +1,24 @@
-###
 # params needed by compute & controller
-# 
-# The controller is configured to also be a compute node.
+#
+# This example has been designed to be used in the context of http://wiki.debian.org/OpenStackPuppetHowto
+#
+# It can be used to deploy on a single host, by adding the following:
+#
+# node /single.host.com/ inherits controller {}
+#
+# And additional compute and volume hosts can be added by adding the following:
+#
+# node /compute1.host.com/ inherits compute {}
 #
 ###
 
-# The fqdn of the proxy host
-$api_server = 'controller.hostname'
+# The public fqdn of the controller host
+$public_server = 'os.the.re'
 
-# Mysql database root password
+# The internal fqdn of the controller host
+$api_server = 'bm0001.the'
+
+# Mysql database root password. MySQL will be used for nova, keystone and glance. 
 $db_rootpassword = 'dummy_password'
 
 ## Nova
@@ -21,9 +31,9 @@ $multi_host_networking = true
 $db_password = 'dummy_nova_password'
 $db_name = 'nova'
 $db_user = 'nova'
-# TODO: change these two lines to exported variables …
-$db_host = '192.168.66.100' # IP address of the host on which the database will be installed (the controller for instance)
-$db_allowed_hosts = ['192.168.66.1', '192.168.66.2', '192.168.66.100'] # IP addresses for all compute hosts : they need access to the database
+# TODO: change these two lines to exported variables 
+$db_host = '192.168.100.1' # IP address of the host on which the database will be installed (the controller for instance)
+$db_allowed_hosts = ['192.168.100.1', '192.168.100.2', '192.168.100.3', '192.168.100.4', '192.168.100.5', '192.168.100.6' ] # IP addresses for all compute hosts : they need access to the database
 
 
 # Rabbitmq config
@@ -85,14 +95,13 @@ class role_nova_base {
   class { 'nova':
     glance_api_servers            => "${glance_host}:9292",
     image_service                 => 'nova.image.glance.GlanceImageService',
-    multi_host_networking         => true,
-    network_manager               => $network_manager,
     rabbit_host                   => $rabbit_host,
     sql_connection                => "mysql://${db_user}:${db_password}@${db_host}/${db_name}?charset=utf8",
     verbose                       => true,
-    vlan_interface                => 'eth1',
-    vlan_start                    => '2000',
   }
+
+  nova_config { 'multi_host': value   => true }
+  
 }
 
 class role_nova_controller {
@@ -136,7 +145,7 @@ class role_nova_compute {
   class { 'nova::compute':
     enabled                       => true,
     vncserver_proxyclient_address => $ipaddress_eth1,
-    novncproxy_base_url           => "http://${api_server}:6080/vnc_auto.html",
+    vncproxy_host	          => $public_server,
   }
   class { 'nova::compute::libvirt':
     libvirt_type     => $libvirt_type,
@@ -158,7 +167,7 @@ class role_nova_compute {
 ###
 # Controller node
 ###
-node /controller/ {
+node controller {
 
   # While http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=668958 is not fixed in Wheezy
   package { 'lsb-base':
@@ -215,8 +224,8 @@ node /controller/ {
   Class['keystone::config::mysql'] -> Class['keystone::roles::admin']
 
   class { 'keystone::endpoint':
-    public_address   => $api_server,
-    admin_address    => $api_server,
+    public_address   => $public_server,
+    admin_address    => $public_server,
     internal_address => $api_server,
   }
 
@@ -229,7 +238,9 @@ node /controller/ {
   class { "nova::keystone::auth":
     auth_name => $nova_auth,
     password  => $nova_pass,
-    address   => $api_server,
+    public_address   => $public_server,
+    admin_address   => $public_server,
+    internal_address   => $api_server,
   }
   Class['keystone::roles::admin'] -> Class['nova::keystone::auth']
 
@@ -240,8 +251,8 @@ node /controller/ {
   class { 'glance::keystone::auth':
     auth_name        => $glance_auth,
     password         => $glance_pass,
-    public_address   => $api_server,
-    admin_address    => $api_server,
+    public_address   => $public_server,
+    admin_address    => $public_server,
     internal_address => $api_server,
   }
   Class['keystone::roles::admin'] -> Class['nova::keystone::auth']
@@ -281,8 +292,29 @@ node /controller/ {
   include role_nova_base
   include role_nova_controller
   include role_nova_compute
-  class { 'nova::network::vlan': enabled => true }
 
+  class { 'nova::network':
+    private_interface => 'eth1',
+    public_interface  => 'eth0',
+    fixed_range       => '10.145.0.0/16',
+    floating_range    => false,
+    network_manager   => $network_manager,
+    config_overrides  => {
+      vlan_start      => '2000',
+    },
+    create_networks => true,
+    enabled         => true,
+    install_service => true,
+  }
+
+  class { 'memcached':
+    listen_ip => '127.0.0.1',
+  }
+
+  class { 'horizon':
+    secret_key => 'unJidyaf8ow',
+  }
+    
   ###
   # rcfile for tests
   ###
@@ -298,10 +330,15 @@ export OS_TENANT_NAME=openstack
 "
 
   }
-
+  nova_config { 'iscsi_ip_prefix': value => '192.168.' }
+  class { 'nova::volume': }
+  class { 'nova::volume::iscsi':
+    volume_group	=> 'nova-volumes',
+    iscsi_helper	=> 'iscsitarget',
+  }
 }
 
-node /compute/ {
+node compute {
   # Override path globally for all exec resources later
   Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin' }
 
@@ -313,7 +350,27 @@ node /compute/ {
 
   include role_nova_base
   include role_nova_compute
-  class { 'nova::compute::multi_host':
-    enabled => true,
+
+  class { 'nova::network':
+    private_interface => 'eth1',
+    public_interface  => 'eth0',
+    fixed_range       => '10.145.0.0/16',
+    floating_range    => false,
+    network_manager   => $network_manager,
+    config_overrides  => {
+      vlan_start      => '2000',
+    },
+    create_networks => false,
+    enabled         => true,
+    install_service => true,
+  }
+
+  nova_config { 'enabled_apis': value => 'metadata' }
+
+  nova_config { 'iscsi_ip_prefix': value => '192.168.' }
+  class { 'nova::volume': }
+  class { 'nova::volume::iscsi':
+    volume_group	=> 'nova-volumes',
+    iscsi_helper	=> 'iscsitarget',
   }
 }
