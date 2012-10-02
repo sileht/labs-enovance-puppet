@@ -68,15 +68,15 @@
 [submodule "ruby"]
 	path = ruby
 	url = https://github.com/puppetlabs/puppetlabs-ruby
-[submodule "nodejs"]
-	path = nodejs
-	url = https://github.com/puppetlabs/puppetlabs-nodejs
 [submodule "sudo"]
 	path = sudo
 	url = https://github.com/saz/puppet-sudo.git
 [submodule "razor"]
 	path = razor
-	url = https://github.com/puppetlabs/puppetlabs-razor
+	url = https://github.com/sileht/puppetlabs-razor
 [submodule "network"]
 	path = network
 	url = https://github.com/attachmentgenie/puppet-module-network.git
+[submodule "nodejs"]
+	path = nodejs
+	url = https://github.com/sileht/puppetlabs-nodejs
